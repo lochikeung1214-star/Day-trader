@@ -71,10 +71,10 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-6 w-full space-y-6">
         
-        <!-- Row 1: Left Chart + Right LV2 & Order Book -->
+        <!-- Row 1: Left Chart (2 Cols) + Right LV2 & Order Book / Recent Trades (1 Col) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Left Chart (Added 2m / 5m / 15m interval controls) -->
+            <!-- Left Chart -->
             <div class="lg:col-span-2 glass-panel rounded-xl p-4 flex flex-col h-[560px]">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                     <div class="flex items-center gap-2">
@@ -84,7 +84,7 @@
                     </div>
                     
                     <div class="flex items-center gap-3 text-xs">
-                        <!-- 週期切換 (新增 2m) -->
+                        <!-- 週期切換 (含 2m) -->
                         <div class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded border border-slate-800">
                             <span class="text-slate-400">週期:</span>
                             <button onclick="changeInterval('2')" class="px-1.5 py-0.5 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-400 hover:text-white rounded font-mono">2m</button>
@@ -105,7 +105,7 @@
                 <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="tv_chart_container"></div>
             </div>
 
-            <!-- Right Column: LV2 / Order Book & Recent Trades -->
+            <!-- Right Column: LV2 / Order Book & Recent Trades (成交明細專用嵌入) -->
             <div class="glass-panel rounded-xl p-4 flex flex-col h-[560px]">
                 <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
                     <h2 class="font-bold text-sm text-slate-200 flex items-center gap-2">
@@ -114,23 +114,24 @@
                     <span class="text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">Level 2</span>
                 </div>
                 
-                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
+                <!-- TradingView Mini Technical / Order Book Widget -->
+                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800 relative">
                     <div class="tradingview-widget-container__widget w-full h-full"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js" async>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
                     {
-                    "colorTheme": "dark",
-                    "dateRange": "12m",
-                    "exchange": "US",
-                    "showChart": false,
-                    "locale": "zh_TW",
-                    "largeChartUrl": "",
-                    "isTransparent": true,
-                    "showSymbolLogo": true,
-                    "showFloatingTooltip": false,
+                    "interval": "1m",
                     "width": "100%",
-                    "height": "100%"
+                    "isTransparent": true,
+                    "height": "100%",
+                    "symbol": "NASDAQ:NVDA",
+                    "showIntervalTabs": true,
+                    "locale": "zh_TW",
+                    "colorTheme": "dark"
                     }
                     </script>
+                </div>
+                <div class="mt-2 text-[11px] text-slate-400 text-center font-mono">
+                    ⚡ 實時盤口與多空技術評級同步運作中
                 </div>
             </div>
         </div>
@@ -208,7 +209,7 @@
     <script>
         let currentQuoteData = null;
         let currentSymbol = 'NASDAQ:NVDA';
-        let currentInterval = '2'; // 預設為 2 分鐘圖
+        let currentInterval = '2'; // 預設 2 分鐘圖
 
         window.addEventListener('DOMContentLoaded', () => {
             initTradingViewWidget(currentSymbol, currentInterval);
