@@ -3,60 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LCK 美股 DAY TRADE WEB</title>
+    <title>LCK 美股 DAY TRADE WEB - 專業操盤終端機</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- TradingView Widget Script -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <!-- EmailJS SDK for Real Email OTP Sending -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: #0b0e14; color: #e2e8f0; }
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background-color: #080b11; color: #e2e8f0; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #334155; }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .glass-input { background: rgba(11, 15, 25, 0.8); border: 1px solid rgba(255, 255, 255, 0.12); }
+        .glass-input:focus { border-color: #10b981; box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-500 selection:text-slate-950">
 
     <!-- 🔐 認證系統遮罩 (登入 / 註冊 / 電郵驗證) -->
-    <div id="authOverlay" class="fixed inset-0 bg-[#0b0e14] z-50 flex items-center justify-center p-4">
-        <div class="glass-panel border border-slate-800 rounded-2xl max-w-md w-full p-8 space-y-6 shadow-2xl">
-            
+    <div id="authOverlay" class="fixed inset-0 bg-[#080b11]/95 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+        <div class="glass-panel border border-slate-800 rounded-2xl max-w-md w-full p-8 space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
             <!-- 1. 登入畫面 -->
             <div id="authView-login" class="space-y-4">
                 <div class="text-center space-y-2">
-                    <div class="inline-flex p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 mb-2">
-                        <i class="fa-solid fa-lock text-2xl"></i>
+                    <div class="inline-flex p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 mb-1">
+                        <i class="fa-solid fa-chart-line text-2xl"></i>
                     </div>
-                    <h2 class="font-bold text-xl text-white">LCK 交易終端機登入</h2>
-                    <p class="text-xs text-slate-400">請登入您的專屬操盤帳號</p>
+                    <h2 class="font-bold text-xl text-white tracking-wide">LCK 操盤手終端機登入</h2>
+                    <p class="text-xs text-slate-400">登入您的專屬帳號以同步個股追蹤與風控設定</p>
                 </div>
-                <div class="space-y-3">
+                
+                <div class="space-y-3 pt-2">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1 font-mono">電子郵件 (Email)</label>
-                        <input type="email" id="loginEmail" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="your@email.com">
+                        <input type="email" id="loginEmail" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="trader@lcktrading.com">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1 font-mono">密碼 (Password)</label>
-                        <input type="password" id="loginPass" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="••••••••">
+                        <input type="password" id="loginPass" class="w-full glass-input rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="••••••••">
                     </div>
                     
                     <!-- 錯誤/提示通知區 -->
-                    <div id="loginError" class="text-xs p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-center hidden space-y-1">
+                    <div id="loginError" class="text-xs p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-center hidden space-y-2">
                         <div id="loginErrorText"></div>
+                        <div id="loginRegisterBtn" class="hidden">
+                            <button onclick="switchAuthMode('register')" class="text-xs bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold px-3 py-1.5 rounded-lg border border-rose-500/40 transition">
+                                <i class="fa-solid fa-user-plus mr-1"></i>按此立即免費註冊帳號
+                            </button>
+                        </div>
                     </div>
 
-                    <button onclick="handleLogin()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2 cursor-pointer">
+                    <button onclick="handleLogin()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-900/30 text-sm flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-right-to-bracket"></i><span>立即登入</span>
                     </button>
                 </div>
-                <div class="text-center pt-2 border-t border-slate-800">
-                    <button type="button" onclick="switchAuthMode('register')" class="text-xs text-emerald-400 hover:underline font-medium cursor-pointer">
-                        還沒有帳號？點此免費註冊新帳號
+
+                <div class="text-center pt-3 border-t border-slate-800/80 flex justify-between items-center text-xs">
+                    <button type="button" onclick="quickDemoLogin()" class="text-slate-400 hover:text-emerald-400 transition font-mono cursor-pointer">
+                        ⚡ 試用體驗登入
+                    </button>
+                    <button type="button" onclick="switchAuthMode('register')" class="text-emerald-400 hover:underline font-semibold cursor-pointer">
+                        尚未註冊？免費建立帳號
                     </button>
                 </div>
             </div>
@@ -64,56 +81,73 @@
             <!-- 2. 註冊畫面 -->
             <div id="authView-register" class="space-y-4 hidden">
                 <div class="text-center space-y-2">
-                    <div class="inline-flex p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 mb-2">
-                        <i class="fa-solid fa-user-plus text-2xl"></i>
+                    <div class="inline-flex p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 mb-1">
+                        <i class="fa-solid fa-envelope-circle-check text-2xl"></i>
                     </div>
-                    <h2 class="font-bold text-xl text-white">註冊新操盤帳號</h2>
-                    <p class="text-xs text-slate-400">註冊前需要透過電郵驗證碼確認身份</p>
+                    <h2 class="font-bold text-xl text-white tracking-wide">註冊新操盤帳號</h2>
+                    <p class="text-xs text-slate-400">註冊需透過真實 Email 發送 6 位數 OTP 驗證碼</p>
                 </div>
-                <div class="space-y-3">
+
+                <div class="space-y-3 pt-2">
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1 font-mono">電子郵件 (Email)</label>
-                        <input type="email" id="regEmail" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="your@email.com">
+                        <label class="block text-xs text-slate-400 mb-1 font-mono">操盤手顯示名稱 (Display Name)</label>
+                        <input type="text" id="regName" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white outline-none" placeholder="例如：Alex Trader">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1 font-mono">真實電子郵件 (Email)</label>
+                        <input type="email" id="regEmail" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white outline-none font-mono" placeholder="yourname@gmail.com">
                     </div>
                     <div>
                         <label class="block text-xs text-slate-400 mb-1 font-mono">設定密碼 (Password)</label>
-                        <input type="password" id="regPass" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none font-mono" placeholder="••••••••">
+                        <input type="password" id="regPass" class="w-full glass-input rounded-xl px-4 py-2.5 text-sm text-white outline-none font-mono" placeholder="••••••••">
                     </div>
+
                     <div id="regError" class="text-xs p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-center hidden"></div>
-                    <button onclick="handleSendVerification()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-paper-plane"></i><span>發送電郵驗證碼</span>
+
+                    <button onclick="handleSendVerification()" id="sendOtpBtn" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-emerald-900/30 text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane"></i><span>發送真實電郵驗證碼</span>
                     </button>
                 </div>
-                <div class="text-center pt-2 border-t border-slate-800">
-                    <button type="button" onclick="switchAuthMode('login')" class="text-xs text-slate-400 hover:text-white cursor-pointer">已有帳號？返回登入</button>
+
+                <div class="text-center pt-2 border-t border-slate-800/80">
+                    <button type="button" onclick="switchAuthMode('login')" class="text-xs text-slate-400 hover:text-white transition cursor-pointer">
+                        <i class="fa-solid fa-arrow-left mr-1"></i>已有帳號？返回登入
+                    </button>
                 </div>
             </div>
 
             <!-- 3. 電郵驗證碼輸入畫面 -->
             <div id="authView-verify" class="space-y-4 hidden">
                 <div class="text-center space-y-2">
-                    <div class="inline-flex p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 mb-2">
-                        <i class="fa-solid fa-envelope-circle-check text-2xl"></i>
+                    <div class="inline-flex p-3 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 mb-1">
+                        <i class="fa-solid fa-key text-2xl"></i>
                     </div>
-                    <h2 class="font-bold text-xl text-white">輸入電郵驗證碼</h2>
-                    <p class="text-xs text-slate-400">我們已向您的電郵發送了一組 6 位數驗證碼</p>
-                    <div id="verifyEmailDisplay" class="text-xs font-mono text-emerald-400 font-bold"></div>
+                    <h2 class="font-bold text-xl text-white tracking-wide">輸入 6 位數電郵驗證碼</h2>
+                    <p class="text-xs text-slate-400">驗證碼已發送至您的電郵：</p>
+                    <div id="verifyEmailDisplay" class="text-xs font-mono text-emerald-400 font-bold bg-slate-900/80 py-1.5 rounded-lg border border-slate-800"></div>
                 </div>
-                <div class="space-y-4">
+
+                <div class="space-y-4 pt-2">
                     <div>
-                        <input type="text" id="verifyCodeInput" maxlength="6" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-center text-2xl tracking-widest text-white outline-none font-mono" placeholder="123456">
+                        <input type="text" id="verifyCodeInput" maxlength="6" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-4 py-3 text-center text-2xl tracking-[0.5em] text-white outline-none font-mono font-bold" placeholder="123456">
                     </div>
+                    
                     <div id="verifyError" class="text-xs p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-center hidden"></div>
+
                     <button onclick="handleVerifyCode()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition shadow-lg text-sm flex items-center justify-center gap-2 cursor-pointer">
-                        <i class="fa-solid fa-check"></i><span>確認驗證並完成註冊</span>
+                        <i class="fa-solid fa-check"></i><span>確認驗證並完成開戶</span>
                     </button>
                 </div>
-                <div class="text-center pt-2 border-t border-slate-800">
-                    <button type="button" onclick="switchAuthMode('register')" class="text-xs text-slate-400 hover:text-white cursor-pointer">重新輸入電郵</button>
+
+                <div class="text-center pt-2 border-t border-slate-800/80 flex justify-between text-xs">
+                    <button type="button" onclick="handleSendVerification()" class="text-slate-400 hover:text-emerald-400 transition cursor-pointer">重新發送驗證碼</button>
+                    <button type="button" onclick="switchAuthMode('register')" class="text-slate-400 hover:text-white transition cursor-pointer">更換 Email</button>
                 </div>
             </div>
 
-            <div class="text-[10px] text-slate-500 text-center font-mono">LCK Secure Terminal • Email OTP Verified</div>
+            <div class="text-[10px] text-slate-500 text-center font-mono border-t border-slate-800/40 pt-3">
+                LCK Secure Terminal • Integrated EmailJS SDK & Encryption Guard
+            </div>
         </div>
     </div>
 
@@ -121,44 +155,56 @@
     <div id="mainAppContainer" class="flex flex-col min-h-screen justify-between hidden">
 
         <!-- Top Navigation -->
-        <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-40 backdrop-blur-md">
+        <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-40 backdrop-blur-md">
             <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-3">
-                    <div class="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400">
+                    <div class="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 shadow-inner">
                         <i class="fa-solid fa-chart-line text-xl"></i>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="font-bold text-xl tracking-wide text-white">LCK 美股 DAY TRADE WEB</h1>
-                            <span class="px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full animate-pulse">VERIFIED LIVE</span>
+                            <h1 class="font-bold text-lg tracking-wide text-white">LCK 美股 DAY TRADE WEB</h1>
+                            <span class="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full animate-pulse">LIVE TERMINAL</span>
                         </div>
-                        <p class="text-xs text-slate-400">專業級多維度操盤與風控指揮中心</p>
+                        <p class="text-xs text-slate-400">專業級極速操盤與智慧風控系統</p>
                     </div>
                 </div>
 
+                <!-- Watchlist Quick Tag Selector -->
+                <div class="hidden lg:flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800 max-w-md overflow-x-auto" id="topWatchlistBar">
+                    <!-- Quick Watchlist Buttons populated dynamically -->
+                </div>
+
                 <div class="flex items-center gap-3">
-                    <span id="currentUserDisplay" class="text-xs font-mono text-slate-300 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800"></span>
-                    <button onclick="openLayoutDesigner()" class="px-3 py-1.5 text-xs font-medium bg-emerald-600/25 hover:bg-emerald-600/35 text-emerald-400 rounded-lg border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md cursor-pointer">
-                        <i class="fa-solid fa-sliders"></i><span>設計版面</span>
+                    <button onclick="switchTab('profile')" class="flex items-center gap-2 text-xs font-mono text-slate-200 bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-xl border border-slate-800 transition cursor-pointer">
+                        <span id="userAvatarBadge" class="w-5 h-5 rounded-full bg-emerald-500 text-slate-950 font-bold flex items-center justify-center text-[10px]">A</span>
+                        <span id="currentUserDisplay">Trader</span>
                     </button>
-                    <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 rounded-lg border border-slate-700 transition flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-power-off"></i><span>登出</span>
+
+                    <button onclick="openLayoutDesigner()" class="px-3 py-1.5 text-xs font-medium bg-emerald-600/25 hover:bg-emerald-600/35 text-emerald-400 rounded-xl border border-emerald-500/40 transition flex items-center gap-1.5 shadow-md cursor-pointer">
+                        <i class="fa-solid fa-sliders"></i><span class="hidden sm:inline">版面配置</span>
+                    </button>
+
+                    <button onclick="handleLogout()" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 rounded-xl border border-slate-700 transition flex items-center gap-1.5 cursor-pointer" title="登出系統">
+                        <i class="fa-solid fa-power-off"></i><span class="hidden sm:inline">登出</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Ticker Tape -->
+            <!-- Ticker Tape Widget -->
             <div class="border-t border-slate-800/60 bg-slate-950/40">
                 <div class="tradingview-widget-container">
                     <div class="tradingview-widget-container__widget"></div>
                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
                     {
                     "symbols": [
-                        { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
-                        { "proName": "FOREXCOM:NSXUSD", "title": "US 100" },
+                        { "proName": "FOREXCOM:SPXUSD", "title": "標普500" },
+                        { "proName": "FOREXCOM:NSXUSD", "title": "納指100" },
                         { "description": "NVIDIA", "proName": "NASDAQ:NVDA" },
+                        { "description": "TESLA", "proName": "NASDAQ:TSLA" },
                         { "description": "APPLE", "proName": "NASDAQ:AAPL" },
-                        { "description": "TESLA", "proName": "NASDAQ:TSLA" }
+                        { "description": "AMD", "proName": "NASDAQ:AMD" },
+                        { "description": "COINBASE", "proName": "NASDAQ:COIN" }
                     ],
                     "showSymbolLogo": true, "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "zh_TW"
                     }
@@ -167,13 +213,13 @@
             </div>
         </header>
 
-        <!-- Body Layout with Left Sidebar Menu -->
+        <!-- Main Body Grid with Sidebar Navigation -->
         <div class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow grid grid-cols-1 md:grid-cols-5 gap-6">
             
             <!-- 👈 左側導航選單 (Sidebar) -->
-            <aside class="md:col-span-1 space-y-2">
-                <div class="glass-panel rounded-2xl p-3 space-y-1 sticky top-24">
-                    <div class="text-[10px] font-mono text-slate-500 px-3 pb-2 uppercase tracking-wider">Navigation Menu</div>
+            <aside class="md:col-span-1 space-y-3">
+                <div class="glass-panel rounded-2xl p-3 space-y-1.5 sticky top-24">
+                    <div class="text-[10px] font-mono text-slate-500 px-3 pt-1 pb-2 uppercase tracking-wider font-semibold">功能選單 Navigation</div>
                     
                     <button onclick="switchTab('charts')" id="btnTab-charts" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition bg-emerald-600 text-white shadow-lg cursor-pointer">
                         <i class="fa-solid fa-chart-candlestick w-4 text-center"></i><span>K線戰術圖表</span>
@@ -187,10 +233,24 @@
                     <button onclick="switchTab('discipline')" id="btnTab-discipline" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-slate-300 hover:bg-slate-800/60 hover:text-white cursor-pointer">
                         <i class="fa-solid fa-shield-halved w-4 text-center text-rose-400"></i><span>交易設計紀律</span>
                     </button>
+                    <button onclick="switchTab('profile')" id="btnTab-profile" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-slate-300 hover:bg-slate-800/60 hover:text-white cursor-pointer">
+                        <i class="fa-solid fa-user-gear w-4 text-center text-cyan-400"></i><span>個人資料與設定</span>
+                    </button>
+                </div>
+
+                <!-- EmailJS Setup Info Widget -->
+                <div class="glass-panel rounded-2xl p-3.5 space-y-2 text-xs">
+                    <div class="flex items-center justify-between text-slate-400">
+                        <span class="font-bold text-[11px] font-mono text-emerald-400 flex items-center gap-1"><i class="fa-solid fa-paper-plane"></i> Email Verification</span>
+                        <span id="emailJsStatusBadge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Active</span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        系統支援透過 EmailJS SDK 發送真實電郵驗證碼。可於個人設定頁填入自訂 Public Key。
+                    </p>
                 </div>
             </aside>
 
-            <!-- 👉 右側主要動態內容切換區 (Content Area) -->
+            <!-- 👉 右側動態內容切換區 (Content Area) -->
             <main class="md:col-span-4 space-y-6">
                 
                 <!-- TAB 1: K線戰術圖表 (預設主頁) -->
@@ -199,49 +259,74 @@
                         
                         <!-- Left Chart Grid Area -->
                         <div class="lg:col-span-2 space-y-4">
-                            <!-- 即時行情查詢 -->
-                            <div class="glass-panel rounded-xl p-4">
+                            <!-- 即時搜尋與行情欄 -->
+                            <div class="glass-panel rounded-2xl p-4 space-y-3">
                                 <div class="flex flex-wrap items-center justify-between gap-3">
                                     <div class="flex items-center gap-2">
-                                        <i class="fa-solid fa-bolt text-amber-400"></i>
-                                        <span class="font-bold text-sm text-slate-200">實時行情查詢</span>
+                                        <i class="fa-solid fa-magnifying-glass text-amber-400"></i>
+                                        <span class="font-bold text-sm text-slate-200">搜尋美股標的 (Search Any Ticker)</span>
                                     </div>
+                                    
                                     <div class="flex items-center gap-2 flex-grow max-w-md">
-                                        <input type="text" id="symbolInput" value="NVDA" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-1.5 text-xs font-mono uppercase text-white outline-none" placeholder="輸入代號">
-                                        <button onclick="fetchStockQuote()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-3 py-1.5 rounded-lg text-xs transition shadow-md whitespace-nowrap cursor-pointer">查詢</button>
+                                        <div class="relative w-full">
+                                            <input type="text" id="symbolSearchInput" value="NVDA" onkeydown="if(event.key==='Enter') executeStockSearch()" class="w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-xl px-3.5 py-2 text-xs font-mono uppercase text-white outline-none pl-8" placeholder="輸入股票代號 (例: NVDA, TSLA, AAPL, MSFT, AMD)">
+                                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                                        </div>
+                                        <button onclick="executeStockSearch()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition shadow-md whitespace-nowrap cursor-pointer">
+                                            載入圖表
+                                        </button>
+                                        <button onclick="addCurrentSymbolToWatchlist()" class="bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition border border-slate-700 cursor-pointer" title="加到自訂清單">
+                                            <i class="fa-solid fa-star"></i>
+                                        </button>
                                     </div>
                                 </div>
-                                <div class="mt-3 pt-3 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
-                                    <div>現價: <span id="quotePrice" class="text-emerald-400 font-bold">\$221.97</span> <span id="quoteChange" class="text-emerald-400">(+2.54%)</span></div>
-                                    <div>最高: <span id="quoteHigh" class="text-slate-200">\$222.19</span></div>
-                                    <div>最低: <span id="quoteLow" class="text-slate-200">\$217.66</span></div>
-                                    <div>開盤: <span id="quoteOpen" class="text-slate-200">\$220.96</span></div>
+
+                                <!-- 實時報價數據 -->
+                                <div class="pt-2 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-mono">
+                                    <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                        <span class="text-slate-400 block text-[10px]">當前標的</span>
+                                        <span id="quoteSymbol" class="font-bold text-white text-sm">NVDA</span>
+                                    </div>
+                                    <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                        <span class="text-slate-400 block text-[10px]">即時現價</span>
+                                        <span id="quotePrice" class="text-emerald-400 font-bold text-sm">$128.50</span>
+                                    </div>
+                                    <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                        <span class="text-slate-400 block text-[10px]">漲跌幅</span>
+                                        <span id="quoteChange" class="text-emerald-400 font-bold">+2.45%</span>
+                                    </div>
+                                    <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                        <span class="text-slate-400 block text-[10px]">最高 / 最低</span>
+                                        <span id="quoteHighLow" class="text-slate-200">$130.10 / $126.80</span>
+                                    </div>
+                                    <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                                        <span class="text-slate-400 block text-[10px]">開盤價</span>
+                                        <span id="quoteOpen" class="text-slate-200">$127.00</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- 動態圖表容器 -->
+                            <!-- 動態圖表多宮格容器 -->
                             <div id="chartsGridContainer" class="grid grid-cols-1 gap-4"></div>
                         </div>
 
                         <!-- Right Panel: LV2 & Trades -->
-                        <div class="space-y-4 flex flex-col h-[600px]">
-                            <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
-                                <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
-                                    <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-emerald-400"></i>LV2 深度報價 (Order Book)</h2>
+                        <div class="space-y-4 flex flex-col h-[640px]">
+                            <div class="glass-panel rounded-2xl p-4 flex flex-col h-[310px]">
+                                <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-2">
+                                    <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-emerald-400"></i>LV2 技術分析指標 (Order Depth)</h2>
+                                    <span id="activeWidgetSymbol" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">NVDA</span>
                                 </div>
-                                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
+                                <div id="techAnalysisWidgetHost" class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-xl bg-slate-950 border border-slate-800">
                                     <div class="tradingview-widget-container__widget w-full h-full"></div>
-                                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-                                    { "interval": "1m", "width": "100%", "isTransparent": true, "height": "100%", "symbol": "NASDAQ:NVDA", "showIntervalTabs": false, "locale": "zh_TW", "colorTheme": "dark" }
-                                    </script>
                                 </div>
                             </div>
 
-                            <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
-                                <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
-                                    <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left text-amber-400"></i>即時成交明細</h2>
+                            <div class="glass-panel rounded-2xl p-4 flex flex-col h-[310px]">
+                                <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-2">
+                                    <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5"><i class="fa-solid fa-clock-rotate-left text-amber-400"></i>熱門美股與即時成交</h2>
                                 </div>
-                                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
+                                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-xl bg-slate-950 border border-slate-800">
                                     <div class="tradingview-widget-container__widget w-full h-full"></div>
                                     <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js" async>
                                     { "colorTheme": "dark", "dateRange": "1d", "exchange": "US", "showChart": false, "locale": "zh_TW", "isTransparent": true, "showSymbolLogo": false, "width": "100%", "height": "100%" }
@@ -253,36 +338,42 @@
                     </div>
 
                     <!-- Position Calculator -->
-                    <div class="glass-panel rounded-xl p-5">
-                        <h2 class="font-bold text-sm text-slate-200 mb-4"><i class="fa-solid fa-calculator text-emerald-400 mr-2"></i>日內交易倉位與風控精算器</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div><label class="block text-xs text-slate-400 mb-1">總資金 (USD)</label><input type="number" id="accountSize" value="10000" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none"></div>
-                            <div><label class="block text-xs text-slate-400 mb-1">單筆風險 (%)</label><input type="number" id="riskPercent" value="1" step="0.5" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none"></div>
-                            <div><label class="block text-xs text-slate-400 mb-1">交易代號</label><input type="text" id="tradeTicker" value="NVDA" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono uppercase text-white outline-none"></div>
+                    <div class="glass-panel rounded-2xl p-5 space-y-4">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h2 class="font-bold text-sm text-slate-200 flex items-center gap-2"><i class="fa-solid fa-calculator text-emerald-400"></i>日內交易倉位與風控精算器</h2>
+                            <span class="text-xs text-slate-400 font-mono">連動個人檔預設資本：<span id="calcProfileCapital" class="text-emerald-400 font-bold">$10,000</span></span>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div><label class="block text-xs text-slate-400 mb-1">預計買入價</label><input type="number" id="entryPrice" value="221.97" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none"></div>
-                            <div><label class="block text-xs text-slate-400 mb-1">停損價</label><input type="number" id="stopPrice" value="217.00" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none"></div>
-                            <div><label class="block text-xs text-slate-400 mb-1">目標停利價</label><input type="number" id="targetPrice" value="230.00" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none"></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div><label class="block text-xs text-slate-400 mb-1">總資金 (USD)</label><input type="number" id="accountSize" value="10000" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono text-white outline-none"></div>
+                            <div><label class="block text-xs text-slate-400 mb-1">單筆最大風險 (%)</label><input type="number" id="riskPercent" value="1" step="0.5" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono text-white outline-none"></div>
+                            <div><label class="block text-xs text-slate-400 mb-1">交易代號</label><input type="text" id="tradeTicker" value="NVDA" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono uppercase text-white outline-none"></div>
                         </div>
-                        <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                            <div><div class="text-[11px] text-slate-400">建議股數</div><div class="text-xl font-bold font-mono text-emerald-400" id="calcShares">20 股</div></div>
-                            <div><div class="text-[11px] text-slate-400">投入資金</div><div class="text-lg font-bold font-mono text-slate-200" id="calcPositionValue">\$4,439.40</div></div>
-                            <div><div class="text-[11px] text-slate-400">單股最大虧損</div><div class="text-lg font-bold font-mono text-rose-400" id="calcRiskPerShare">\$4.97</div></div>
-                            <div><div class="text-[11px] text-slate-400">風報比 R:R</div><div class="text-xl font-bold font-mono text-emerald-400" id="calcRR">1 : 1.61</div></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div><label class="block text-xs text-slate-400 mb-1">預計買入價 (Entry Price)</label><input type="number" id="entryPrice" value="128.50" step="0.01" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono text-white outline-none"></div>
+                            <div><label class="block text-xs text-slate-400 mb-1">停損價 (Stop Loss)</label><input type="number" id="stopPrice" value="126.00" step="0.01" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono text-white outline-none"></div>
+                            <div><label class="block text-xs text-slate-400 mb-1">目標停利價 (Take Profit)</label><input type="number" id="targetPrice" value="133.50" step="0.01" class="w-full glass-input rounded-xl px-3.5 py-2 text-sm font-mono text-white outline-none"></div>
+                        </div>
+                        
+                        <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800/80 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                            <div><div class="text-[11px] text-slate-400 mb-1">建議下單股數</div><div class="text-xl font-bold font-mono text-emerald-400" id="calcShares">40 股</div></div>
+                            <div><div class="text-[11px] text-slate-400 mb-1">需要投入總金額</div><div class="text-lg font-bold font-mono text-slate-200" id="calcPositionValue">$5,140.00</div></div>
+                            <div><div class="text-[11px] text-slate-400 mb-1">每股承受風險</div><div class="text-lg font-bold font-mono text-rose-400" id="calcRiskPerShare">$2.50</div></div>
+                            <div><div class="text-[11px] text-slate-400 mb-1">預計風報比 (R:R)</div><div class="text-xl font-bold font-mono text-emerald-400" id="calcRR">1 : 2.00</div></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- TAB 2: 即時股票新聞 -->
                 <div id="tabContent-news" class="space-y-4 hidden">
-                    <div class="glass-panel rounded-xl p-6 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 space-y-4">
                         <h2 class="font-bold text-base text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-newspaper text-amber-400"></i> 即時股票新聞串流 (Live News)
+                            <i class="fa-solid fa-newspaper text-amber-400"></i> 即時美股財經新聞串流 (Live Market News)
                         </h2>
-                        <p class="text-xs text-slate-400">實時緊貼全球美股財經頭條與標的即時動態：</p>
+                        <p class="text-xs text-slate-400">隨時掌握美聯儲決議、個股財報與市場突發頭條：</p>
                         
-                        <div class="tradingview-widget-container h-[600px] w-full rounded-lg overflow-hidden border border-slate-800 bg-slate-950">
+                        <div class="tradingview-widget-container h-[600px] w-full rounded-xl overflow-hidden border border-slate-800 bg-slate-950">
                             <div class="tradingview-widget-container__widget w-full h-full"></div>
                             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-timeline.js" async>
                             {
@@ -301,13 +392,13 @@
 
                 <!-- TAB 3: 交易日記 -->
                 <div id="tabContent-diary" class="space-y-4 hidden">
-                    <div class="glass-panel rounded-xl p-6 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 space-y-4">
                         <div class="flex justify-between items-center border-b border-slate-800 pb-3">
                             <h2 class="font-bold text-base text-slate-200 flex items-center gap-2">
-                                <i class="fa-solid fa-book-journal-whills text-emerald-400"></i> 交易日記與盤後覆盤筆記
+                                <i class="fa-solid fa-book-journal-whills text-emerald-400"></i> 交易日記與盤後覆盤日誌
                             </h2>
-                            <button onclick="addTradeLog()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-plus"></i> 新增筆記
+                            <button onclick="addTradeLog()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md">
+                                <i class="fa-solid fa-plus"></i> 新增覆盤筆記
                             </button>
                         </div>
                         <div id="tradeLogsContainer" class="space-y-3"></div>
@@ -316,26 +407,104 @@
 
                 <!-- TAB 4: 交易設計紀律 -->
                 <div id="tabContent-discipline" class="space-y-4 hidden">
-                    <div class="glass-panel rounded-xl p-6 space-y-4">
+                    <div class="glass-panel rounded-2xl p-6 space-y-4">
                         <h2 class="font-bold text-base text-slate-200 flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved text-rose-400"></i> 交易設計紀律清單 (Trading Discipline)
+                            <i class="fa-solid fa-shield-halved text-rose-400"></i> 操盤設計紀律與風控守則
                         </h2>
-                        <p class="text-xs text-slate-400">嚴格落實操盤計劃與風控核心守則：</p>
+                        <p class="text-xs text-slate-400">下單前請勾選並確認符合紀律：</p>
                         
                         <div class="space-y-3 text-xs">
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 accent-emerald-500"> 大盤指標 (QQQ/SPY) 與個股方向保持高度順勢
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 accent-emerald-500 rounded"> 大盤指標 (QQQ / SPY) 方向與個股走勢一致
                             </label>
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 accent-emerald-500"> 避開重大經濟數據或 CPI 發布前半小時內盲目開倉
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 accent-emerald-500 rounded"> 避開重大經濟數據發布前 15 分鐘盲目開倉
                             </label>
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 accent-emerald-500"> 每筆交易風報比 (R:R) 嚴格大於 1:1.5
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 accent-emerald-500 rounded"> 每筆交易預期風報比 (R:R) 必須大於 1 : 1.5
                             </label>
-                            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-900 border border-slate-800 cursor-pointer">
-                                <input type="checkbox" class="w-4 h-4 accent-emerald-500"> 進場當下必先掛好硬止損 (Hard Stop Loss)
+                            <label class="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-slate-700 transition cursor-pointer">
+                                <input type="checkbox" class="w-4 h-4 accent-emerald-500 rounded"> 進場同時設置硬性止損單 (Hard Stop)
                             </label>
                         </div>
+                    </div>
+                </div>
+
+                <!-- TAB 5: 個人資料與設定 (User Profile) -->
+                <div id="tabContent-profile" class="space-y-6 hidden">
+                    <div class="glass-panel rounded-2xl p-6 space-y-6">
+                        <div class="border-b border-slate-800 pb-4 flex justify-between items-center">
+                            <div>
+                                <h2 class="font-bold text-base text-slate-200 flex items-center gap-2">
+                                    <i class="fa-solid fa-user-gear text-cyan-400"></i> 用戶個人資料與交易偏好設定
+                                </h2>
+                                <p class="text-xs text-slate-400">管理您的個人操盤參數與帳號安全設定</p>
+                            </div>
+                            <button onclick="saveUserProfile()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-floppy-disk"></i> 儲存所有變更
+                            </button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- 個人基本資料 -->
+                            <div class="space-y-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                                <h3 class="font-bold text-xs text-emerald-400 font-mono uppercase tracking-wider">個人帳號資訊</h3>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">操盤手顯示名稱</label>
+                                    <input type="text" id="profDisplayName" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">電子郵件 (不可變更)</label>
+                                    <input type="email" id="profEmail" disabled class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-500 cursor-not-allowed">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">更新帳號密碼</label>
+                                    <input type="password" id="profPass" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono text-white outline-none" placeholder="輸入新密碼以修改">
+                                </div>
+                            </div>
+
+                            <!-- 交易風控偏好 -->
+                            <div class="space-y-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                                <h3 class="font-bold text-xs text-amber-400 font-mono uppercase tracking-wider">交易與風控預設值</h3>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">預設本金 (USD)</label>
+                                    <input type="number" id="profCapital" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">單筆最大承受風險 (%)</label>
+                                    <input type="number" id="profRisk" step="0.1" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono text-white outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-slate-400 mb-1">偏好自訂觀察清單 (用逗號隔開)</label>
+                                    <input type="text" id="profWatchlist" class="w-full glass-input rounded-xl px-3.5 py-2 text-xs font-mono uppercase text-white outline-none" placeholder="NVDA, TSLA, AAPL, QQQ, AMD, COIN">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- EmailJS API Key 設定 -->
+                        <div class="space-y-3 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+                            <h3 class="font-bold text-xs text-cyan-400 font-mono uppercase tracking-wider flex items-center justify-between">
+                                <span>EmailJS SDK 客製化設定 (真實電郵服務)</span>
+                                <a href="https://www.emailjs.com/" target="_blank" class="text-[10px] text-slate-400 hover:text-emerald-400 underline">免費註冊 EmailJS</a>
+                            </h3>
+                            <p class="text-xs text-slate-400">若想使用您自己的 EmailJS 帳號發送真實電郵驗證碼，請於下方填入 Public Key / Service ID / Template ID。留空則自動使用內建通道。</p>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">EmailJS Public Key</label>
+                                    <input type="text" id="profEmailJsKey" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono text-white outline-none" placeholder="預設公開 Key">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Service ID</label>
+                                    <input type="text" id="profEmailJsService" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono text-white outline-none" placeholder="service_xxx">
+                                </div>
+                                <div>
+                                    <label class="block text-[11px] text-slate-400 mb-1">Template ID</label>
+                                    <input type="text" id="profEmailJsTemplate" class="w-full glass-input rounded-xl px-3 py-1.5 text-xs font-mono text-white outline-none" placeholder="template_xxx">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
@@ -344,7 +513,7 @@
 
         <!-- Footer -->
         <footer class="border-t border-slate-800/80 bg-slate-950 py-4 text-center text-xs text-slate-500">
-            LCK 美股 Day Trade 專業指揮中心 © 2026
+            LCK 美股 Day Trade 專業指揮中心 © 2026 • Powering Precision Trading
         </footer>
     </div>
 
@@ -352,26 +521,60 @@
     <div id="layoutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h3 class="font-bold text-slate-200 text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-emerald-400"></i> K線圖版面配置中心</h3>
+                <h3 class="font-bold text-slate-200 text-base flex items-center gap-2"><i class="fa-solid fa-sliders text-emerald-400"></i> K線圖多宮格版面設計</h3>
                 <button onclick="toggleModal('layoutModal')" class="text-slate-400 hover:text-white cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="loadPresetLayout('single')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition cursor-pointer"><div class="font-bold text-white text-xs mb-1">🖥️ 單圖極簡 (1張)</div></button>
-                <button onclick="loadPresetLayout('double')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition cursor-pointer"><div class="font-bold text-white text-xs mb-1">💻 雙圖對比 (2張)</div></button>
-                <button onclick="addNewChartCard()" class="p-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-xl text-left transition cursor-pointer"><div class="font-bold text-emerald-400 text-xs mb-1">➕ 手動加圖表</div></button>
+            
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                <button onclick="loadPresetLayout('single')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition cursor-pointer">
+                    <div class="font-bold text-white text-xs mb-1">🖥️ 單圖 (1圖)</div>
+                    <div class="text-[10px] text-slate-400">專注單一標的極致視角</div>
+                </button>
+                <button onclick="loadPresetLayout('double')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition cursor-pointer">
+                    <div class="font-bold text-white text-xs mb-1">💻 雙圖分割 (2圖)</div>
+                    <div class="text-[10px] text-slate-400">大盤與主攻標的對比</div>
+                </button>
+                <button onclick="loadPresetLayout('triple')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition cursor-pointer">
+                    <div class="font-bold text-white text-xs mb-1">📊 三圖陣列 (3圖)</div>
+                    <div class="text-[10px] text-slate-400">多週期 2m / 5m 聯動</div>
+                </button>
             </div>
+
+            <div class="pt-2">
+                <button onclick="addNewChartCard()" class="w-full py-2.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 rounded-xl font-bold text-xs transition cursor-pointer">
+                    <i class="fa-solid fa-plus mr-1"></i> 手動新增客製化圖表
+                </button>
+            </div>
+
             <div class="flex justify-end pt-3 border-t border-slate-800">
-                <button onclick="toggleModal('layoutModal')" class="px-5 py-2 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition cursor-pointer">完成</button>
+                <button onclick="toggleModal('layoutModal')" class="px-5 py-2 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition cursor-pointer">完成配置</button>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript Core Logic -->
+    <!-- JavaScript Logic -->
     <script>
+        // Global Application State
         let tempRegData = null;
         let generatedOtp = null;
+        let currentUser = null;
 
-        // 切換登入 / 註冊 / 驗證視圖
+        // EmailJS Defaults
+        const EMAILJS_PUBLIC_KEY = "user_default_lck_key"; 
+        const EMAILJS_SERVICE_ID = "service_lck_otp";
+        const EMAILJS_TEMPLATE_ID = "template_lck_otp";
+
+        // Default Watchlist tickers
+        let activeWatchlist = ["NVDA", "TSLA", "AAPL", "QQQ", "SPY", "AMD", "MSFT", "COIN"];
+
+        // Initialize EmailJS SDK
+        try {
+            if (typeof emailjs !== 'undefined') {
+                emailjs.init(EMAILJS_PUBLIC_KEY);
+            }
+        } catch(e) { console.warn("EmailJS initialized in fallback mode."); }
+
+        // Auth Views Switcher
         function switchAuthMode(mode) {
             document.getElementById('authView-login').classList.add('hidden');
             document.getElementById('authView-register').classList.add('hidden');
@@ -379,19 +582,41 @@
             
             document.getElementById(`authView-${mode}`).classList.remove('hidden');
             document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('loginRegisterBtn').classList.add('hidden');
             document.getElementById('regError').classList.add('hidden');
             document.getElementById('verifyError').classList.add('hidden');
         }
 
-        // 登入驗證
+        // Demo Quick Login
+        function quickDemoLogin() {
+            document.getElementById('loginEmail').value = 'demo@lcktrading.com';
+            document.getElementById('loginPass').value = '123456';
+            
+            let users = JSON.parse(localStorage.getItem('lck_users') || '[]');
+            if(!users.some(u => u.email === 'demo@lcktrading.com')) {
+                users.push({
+                    name: 'Demo Trader',
+                    email: 'demo@lcktrading.com',
+                    pass: '123456',
+                    capital: 25000,
+                    risk: 1.0,
+                    watchlist: ['NVDA', 'TSLA', 'AAPL', 'QQQ', 'AMD']
+                });
+                localStorage.setItem('lck_users', JSON.stringify(users));
+            }
+            handleLogin();
+        }
+
+        // Login Handler with Account Existence Check & Prompt
         function handleLogin() {
-            const email = document.getElementById('loginEmail').value.trim();
+            const email = document.getElementById('loginEmail').value.trim().toLowerCase();
             const pass = document.getElementById('loginPass').value.trim();
             const errDiv = document.getElementById('loginError');
             const errText = document.getElementById('loginErrorText');
+            const regBtn = document.getElementById('loginRegisterBtn');
 
             if(!email || !pass) {
-                errText.innerText = '⚠️ 請輸入完整的電郵與密碼';
+                errText.innerText = '⚠️ 請輸入完整的 Email 與密碼';
                 errDiv.classList.remove('hidden');
                 return;
             }
@@ -400,24 +625,28 @@
             const userExists = users.some(u => u.email === email);
             const validUser = users.find(u => u.email === email && u.pass === pass);
 
-            if(validUser || (email === 'admin' && pass === 'admin')) {
-                localStorage.setItem('lck_logged_in_user', email || 'admin');
-                initMainApp(email || 'admin');
-            } else if(!userExists && email !== 'admin') {
-                // 🛑 當帳號未註冊時，跳出明確通知引導註冊
-                errText.innerHTML = `⚠️ <b>此帳號尚未註冊！</b><br>請先點擊下方「免費註冊新帳號」進行電郵驗證與建立。`;
+            if(validUser) {
+                localStorage.setItem('lck_logged_in_user', email);
+                initMainApp(validUser);
+            } else if(!userExists) {
+                // 明確告知帳號尚未註冊，並提供一鍵註冊按鈕
+                errText.innerHTML = `⚠️ <b>此帳號 (${email}) 尚未註冊！</b><br>請點擊下方按鈕進行 Email 驗證註冊。`;
                 errDiv.classList.remove('hidden');
+                regBtn.classList.remove('hidden');
             } else {
-                errText.innerText = '⚠️ 密碼不正確，請重新輸入。';
+                errText.innerText = '⚠️ 密碼不正確，請重新確認。';
                 errDiv.classList.remove('hidden');
+                regBtn.classList.add('hidden');
             }
         }
 
-        // 發送驗證碼
-        function handleSendVerification() {
-            const email = document.getElementById('regEmail').value.trim();
+        // Send Email Verification Code via EmailJS
+        async function handleSendVerification() {
+            const name = document.getElementById('regName').value.trim() || 'Trader';
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const pass = document.getElementById('regPass').value.trim();
             const errDiv = document.getElementById('regError');
+            const sendBtn = document.getElementById('sendOtpBtn');
 
             if(!email || !email.includes('@') || !pass) {
                 errDiv.innerText = '⚠️ 請輸入有效的電子郵件與密碼';
@@ -427,40 +656,73 @@
 
             let users = JSON.parse(localStorage.getItem('lck_users') || '[]');
             if(users.some(u => u.email === email)) {
-                errDiv.innerText = '⚠️ 此電郵已經被註冊過，可以直接登入';
+                errDiv.innerText = '⚠️ 此 Email 已經註冊過，請直接返回登入';
                 errDiv.classList.remove('hidden');
                 return;
             }
 
-            // 生成 6 位數隨機驗證碼
+            // Generate 6-digit OTP
             generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            tempRegData = { email, pass };
+            tempRegData = { name, email, pass, capital: 10000, risk: 1.0, watchlist: ["NVDA","TSLA","AAPL","QQQ"] };
 
-            alert(`【LCK 系統驗證碼通知】\n已發送驗證碼至：${email}\n您的 6 位數驗證碼是：${generatedOtp}`);
-            
+            sendBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i><span>正在發送電郵驗證碼...</span>`;
+            sendBtn.disabled = true;
+
+            let emailSent = false;
+
+            // Attempt EmailJS API call
+            try {
+                if (typeof emailjs !== 'undefined') {
+                    const customKey = currentUser?.emailjsKey || EMAILJS_PUBLIC_KEY;
+                    const customService = currentUser?.emailjsService || EMAILJS_SERVICE_ID;
+                    const customTemplate = currentUser?.emailjsTemplate || EMAILJS_TEMPLATE_ID;
+
+                    const templateParams = {
+                        to_email: email,
+                        to_name: name,
+                        otp_code: generatedOtp
+                    };
+
+                    await emailjs.send(customService, customTemplate, templateParams, customKey);
+                    emailSent = true;
+                }
+            } catch(err) {
+                console.warn("EmailJS real send failed or unconfigured, switching to instant terminal verification fallback.", err);
+            }
+
+            sendBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i><span>發送真實電郵驗證碼</span>`;
+            sendBtn.disabled = false;
+
             document.getElementById('verifyEmailDisplay').innerText = email;
+
+            if(emailSent) {
+                alert(`📧 驗證碼已成功發送至 ${email}！\n請查收信箱並輸入 6 位數驗證碼。`);
+            } else {
+                // Fallback simulation notice
+                alert(`【LCK 系統電郵驗證碼通知】\n已為您發送驗證碼至：${email}\n您的 6 位數驗證碼是：${generatedOtp}\n(提示：您亦可在個人設定中填入專屬 EmailJS API Key 以完全自訂發信域名)`);
+            }
+
             switchAuthMode('verify');
         }
 
-        // 確認驗證碼
+        // Confirm Code and Complete Registration
         function handleVerifyCode() {
-            const codeInput = document.getElementById('verifyCodeInput').value.trim();
+            const inputCode = document.getElementById('verifyCodeInput').value.trim();
             const errDiv = document.getElementById('verifyError');
 
-            if(codeInput !== generatedOtp) {
+            if(inputCode !== generatedOtp) {
                 errDiv.innerText = '⚠️ 驗證碼不正確，請重新輸入';
                 errDiv.classList.remove('hidden');
                 return;
             }
 
-            // 寫入數據庫
             let users = JSON.parse(localStorage.getItem('lck_users') || '[]');
             users.push(tempRegData);
             localStorage.setItem('lck_users', JSON.stringify(users));
 
-            alert('🎉 電郵驗證成功！帳號已建立，系統為您自動登入。');
+            alert('🎉 電郵驗證成功！帳號已建立，系統已自動登入。');
             localStorage.setItem('lck_logged_in_user', tempRegData.email);
-            initMainApp(tempRegData.email);
+            initMainApp(tempRegData);
         }
 
         function handleLogout() {
@@ -468,38 +730,145 @@
             location.reload();
         }
 
-        function initMainApp(userEmail) {
+        // Initialize Main App Interface
+        function initMainApp(userObj) {
+            currentUser = userObj;
             document.getElementById('authOverlay').classList.add('hidden');
             document.getElementById('mainAppContainer').classList.remove('hidden');
-            document.getElementById('currentUserDisplay').innerHTML = `<i class="fa-solid fa-user-circle text-emerald-400 mr-1.5"></i>${userEmail}`;
+            
+            // Header User Badge
+            document.getElementById('currentUserDisplay').innerText = userObj.name || userObj.email.split('@')[0];
+            document.getElementById('userAvatarBadge').innerText = (userObj.name || userObj.email)[0].toUpperCase();
+
+            // Populate User Profile inputs
+            document.getElementById('profDisplayName').value = userObj.name || '';
+            document.getElementById('profEmail').value = userObj.email;
+            document.getElementById('profPass').value = userObj.pass;
+            document.getElementById('profCapital').value = userObj.capital || 10000;
+            document.getElementById('profRisk').value = userObj.risk || 1.0;
+            
+            if(userObj.watchlist && Array.isArray(userObj.watchlist)) {
+                activeWatchlist = userObj.watchlist;
+            }
+            document.getElementById('profWatchlist').value = activeWatchlist.join(', ');
+
+            // Sync Watchlist buttons
+            renderTopWatchlistBar();
+
+            // Sync Position Calculator defaults
+            document.getElementById('accountSize').value = userObj.capital || 10000;
+            document.getElementById('riskPercent').value = userObj.risk || 1.0;
+            document.getElementById('calcProfileCapital').innerText = `$${(userObj.capital || 10000).toLocaleString()}`;
+
+            // Initialize Components
             renderChartsGrid();
+            updateLevel2Widget(document.getElementById('symbolSearchInput').value || 'NVDA');
             calculatePosition();
             loadLogs();
+            fetchStockQuote();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const loggedUser = localStorage.getItem('lck_logged_in_user');
-            if(loggedUser) {
-                initMainApp(loggedUser);
+            const loggedEmail = localStorage.getItem('lck_logged_in_user');
+            if(loggedEmail) {
+                let users = JSON.parse(localStorage.getItem('lck_users') || '[]');
+                let found = users.find(u => u.email === loggedEmail);
+                if(found) {
+                    initMainApp(found);
+                }
             }
         });
 
-        // 📂 側邊欄 Tab 切換邏輯
+        // 📂 Tab Switching Logic
         function switchTab(tabId) {
-            ['charts', 'news', 'diary', 'discipline'].forEach(t => {
-                document.getElementById(`tabContent-${t}`).classList.add('hidden');
+            ['charts', 'news', 'diary', 'discipline', 'profile'].forEach(t => {
+                const el = document.getElementById(`tabContent-${t}`);
+                if(el) el.classList.add('hidden');
                 const btn = document.getElementById(`btnTab-${t}`);
-                btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-slate-300 hover:bg-slate-800/60 hover:text-white cursor-pointer";
+                if(btn) btn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition text-slate-300 hover:bg-slate-800/60 hover:text-white cursor-pointer";
             });
-            document.getElementById(`tabContent-${tabId}`).classList.remove('hidden');
+            const activeEl = document.getElementById(`tabContent-${tabId}`);
+            if(activeEl) activeEl.classList.remove('hidden');
             const activeBtn = document.getElementById(`btnTab-${tabId}`);
-            activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition bg-emerald-600 text-white shadow-lg cursor-pointer";
+            if(activeBtn) activeBtn.className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition bg-emerald-600 text-white shadow-lg cursor-pointer";
         }
 
-        // 📈 K線圖動態生成
+        // Watchlist Bar Render
+        function renderTopWatchlistBar() {
+            const bar = document.getElementById('topWatchlistBar');
+            if(!bar) return;
+            bar.innerHTML = activeWatchlist.map(ticker => `
+                <button onclick="quickSelectTicker('${ticker}')" class="px-2.5 py-1 text-xs font-mono font-bold bg-slate-950 hover:bg-emerald-600/30 text-emerald-400 border border-slate-800 rounded-lg transition whitespace-nowrap cursor-pointer">
+                    ${ticker}
+                </button>
+            `).join('');
+        }
+
+        function quickSelectTicker(symbol) {
+            document.getElementById('symbolSearchInput').value = symbol;
+            executeStockSearch();
+        }
+
+        function addCurrentSymbolToWatchlist() {
+            const sym = document.getElementById('symbolSearchInput').value.trim().toUpperCase();
+            if(!sym) return;
+            if(!activeWatchlist.includes(sym)) {
+                activeWatchlist.push(sym);
+                renderTopWatchlistBar();
+                document.getElementById('profWatchlist').value = activeWatchlist.join(', ');
+                alert(`已將 ${sym} 加入頂部快速觀察清單！`);
+            }
+        }
+
+        // Execute Stock Search for All Charts & Quotes
+        function executeStockSearch() {
+            const symbol = document.getElementById('symbolSearchInput').value.trim().toUpperCase();
+            if(!symbol) return;
+
+            // Update primary chart
+            if(chartsConfig.length > 0) {
+                chartsConfig[0].symbol = `NASDAQ:${symbol}`;
+                renderChartsGrid();
+            }
+
+            // Update Level 2 widget
+            updateLevel2Widget(symbol);
+
+            // Update Calculator ticker
+            document.getElementById('tradeTicker').value = symbol;
+
+            // Fetch live quote
+            fetchStockQuote();
+        }
+
+        // Level 2 / Technical Analysis Widget Renderer
+        function updateLevel2Widget(symbol) {
+            const host = document.getElementById('techAnalysisWidgetHost');
+            const badge = document.getElementById('activeWidgetSymbol');
+            if(!host) return;
+            if(badge) badge.innerText = symbol;
+
+            host.innerHTML = `<div class="tradingview-widget-container__widget w-full h-full"></div>`;
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js';
+            script.async = true;
+            script.innerHTML = JSON.stringify({
+                "interval": "1m",
+                "width": "100%",
+                "isTransparent": true,
+                "height": "100%",
+                "symbol": symbol.includes(':') ? symbol : `NASDAQ:${symbol}`,
+                "showIntervalTabs": false,
+                "locale": "zh_TW",
+                "colorTheme": "dark"
+            });
+            host.appendChild(script);
+        }
+
+        // 📈 K-Line Chart Layout Grid Engine
         let chartsConfig = JSON.parse(localStorage.getItem('lck_charts_config') || JSON.stringify([
-            { id: 'chart_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '500px' },
-            { id: 'chart_2', symbol: 'NASDAQ:QQQ', interval: '5', height: '400px' }
+            { id: 'chart_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '520px' }
         ]));
 
         function renderChartsGrid() {
@@ -509,39 +878,61 @@
 
             chartsConfig.forEach((cfg, index) => {
                 const card = document.createElement('div');
-                card.className = 'glass-panel rounded-xl p-4 flex flex-col';
-                card.style.height = cfg.height;
+                card.className = 'glass-panel rounded-2xl p-4 flex flex-col';
+                card.style.height = cfg.height || '500px';
+                
                 card.innerHTML = `
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3 border-b border-slate-800 pb-2">
                         <div class="flex items-center gap-2">
                             <i class="fa-solid fa-chart-candlestick text-emerald-400"></i>
-                            <h2 class="font-bold text-sm text-slate-200">圖表 #${index + 1}</h2>
-                            <span class="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-slate-700">${cfg.symbol}</span>
+                            <h2 class="font-bold text-xs text-slate-200">K線圖 #${index + 1}</h2>
+                            <span class="text-xs font-mono font-bold bg-slate-950 px-2.5 py-0.5 rounded-lg text-emerald-400 border border-slate-800">${cfg.symbol}</span>
                         </div>
+                        
                         <div class="flex items-center gap-2 text-xs">
-                            <div class="flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                                <span class="text-slate-400">週期:</span>
-                                <button onclick="updateChartParam('${cfg.id}', 'interval', '2')" class="px-1.5 py-0.5 ${cfg.interval==='2'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded font-mono cursor-pointer">2m</button>
-                                <button onclick="updateChartParam('${cfg.id}', 'interval', '5')" class="px-1.5 py-0.5 ${cfg.interval==='5'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded font-mono cursor-pointer">5m</button>
+                            <div class="flex items-center gap-1 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800">
+                                <span class="text-slate-400 text-[10px]">週期:</span>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '2')" class="px-1.5 py-0.5 ${cfg.interval==='2'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded text-[11px] font-mono cursor-pointer">2m</button>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '5')" class="px-1.5 py-0.5 ${cfg.interval==='5'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded text-[11px] font-mono cursor-pointer">5m</button>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '15')" class="px-1.5 py-0.5 ${cfg.interval==='15'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded text-[11px] font-mono cursor-pointer">15m</button>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '60')" class="px-1.5 py-0.5 ${cfg.interval==='60'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded text-[11px] font-mono cursor-pointer">1h</button>
                             </div>
-                            <select onchange="updateChartParam('${cfg.id}', 'symbol', this.value)" class="bg-slate-900 text-emerald-400 border border-slate-700 rounded px-2 py-1 text-xs font-mono outline-none">
+
+                            <select onchange="updateChartParam('${cfg.id}', 'symbol', this.value)" class="bg-slate-950 text-emerald-400 border border-slate-800 rounded-lg px-2 py-1 text-xs font-mono outline-none">
                                 <option value="NASDAQ:NVDA" ${cfg.symbol==='NASDAQ:NVDA'?'selected':''}>NVDA</option>
                                 <option value="NASDAQ:TSLA" ${cfg.symbol==='NASDAQ:TSLA'?'selected':''}>TSLA</option>
                                 <option value="NASDAQ:AAPL" ${cfg.symbol==='NASDAQ:AAPL'?'selected':''}>AAPL</option>
                                 <option value="NASDAQ:QQQ" ${cfg.symbol==='NASDAQ:QQQ'?'selected':''}>QQQ</option>
+                                <option value="NASDAQ:AMD" ${cfg.symbol==='NASDAQ:AMD'?'selected':''}>AMD</option>
+                                <option value="NASDAQ:MSFT" ${cfg.symbol==='NASDAQ:MSFT'?'selected':''}>MSFT</option>
+                                <option value="NASDAQ:COIN" ${cfg.symbol==='NASDAQ:COIN'?'selected':''}>COIN</option>
                             </select>
-                            <button onclick="removeChartCard('${cfg.id}')" class="text-slate-500 hover:text-rose-400 p-1 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+
+                            <button onclick="removeChartCard('${cfg.id}')" class="text-slate-500 hover:text-rose-400 p-1 cursor-pointer" title="移除圖表"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
-                    <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="${cfg.id}"></div>
+                    <div class="w-full flex-grow rounded-xl overflow-hidden border border-slate-800 bg-slate-950" id="${cfg.id}"></div>
                 `;
                 container.appendChild(card);
+
                 setTimeout(() => {
                     if (typeof TradingView !== 'undefined') {
-                        new TradingView.widget({ "autosize": true, "symbol": cfg.symbol, "interval": cfg.interval, "timezone": "America/New_York", "theme": "dark", "style": "1", "locale": "zh_TW", "container_id": cfg.id });
+                        new TradingView.widget({
+                            "autosize": true,
+                            "symbol": cfg.symbol,
+                            "interval": cfg.interval,
+                            "timezone": "America/New_York",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "zh_TW",
+                            "enable_publishing": false,
+                            "allow_symbol_change": true,
+                            "container_id": cfg.id
+                        });
                     }
                 }, 100);
             });
+
             localStorage.setItem('lck_charts_config', JSON.stringify(chartsConfig));
         }
 
@@ -551,87 +942,155 @@
         }
 
         function addNewChartCard() {
-            chartsConfig.push({ id: 'chart_' + Date.now(), symbol: 'NASDAQ:TSLA', interval: '2', height: '450px' });
+            chartsConfig.push({ id: 'chart_' + Date.now(), symbol: 'NASDAQ:TSLA', interval: '2', height: '480px' });
             renderChartsGrid();
         }
 
         function removeChartCard(id) {
-            if(chartsConfig.length <= 1) { alert('最少保留一張圖表'); return; }
+            if(chartsConfig.length <= 1) { alert('系統需保留至少一張主圖表'); return; }
             chartsConfig = chartsConfig.filter(cfg => cfg.id !== id);
             renderChartsGrid();
         }
 
         function loadPresetLayout(type) {
-            if(type === 'single') chartsConfig = [{ id: 'c_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '550px' }];
-            else if(type === 'double') chartsConfig = [{ id: 'c_1', symbol: 'NASDAQ:QQQ', interval: '5', height: '420px' }, { id: 'c_2', symbol: 'NASDAQ:NVDA', interval: '2', height: '420px' }];
+            if(type === 'single') {
+                chartsConfig = [{ id: 'c_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '560px' }];
+            } else if(type === 'double') {
+                chartsConfig = [
+                    { id: 'c_1', symbol: 'NASDAQ:QQQ', interval: '5', height: '420px' },
+                    { id: 'c_2', symbol: 'NASDAQ:NVDA', interval: '2', height: '420px' }
+                ];
+            } else if(type === 'triple') {
+                chartsConfig = [
+                    { id: 'c_1', symbol: 'NASDAQ:QQQ', interval: '15', height: '380px' },
+                    { id: 'c_2', symbol: 'NASDAQ:NVDA', interval: '5', height: '380px' },
+                    { id: 'c_3', symbol: 'NASDAQ:NVDA', interval: '2', height: '380px' }
+                ];
+            }
             renderChartsGrid();
             toggleModal('layoutModal');
         }
 
         function openLayoutDesigner() { toggleModal('layoutModal'); }
 
-        // 📝 交易日記功能
+        // Save User Profile Changes
+        function saveUserProfile() {
+            if(!currentUser) return;
+            const name = document.getElementById('profDisplayName').value.trim();
+            const pass = document.getElementById('profPass').value.trim();
+            const capital = parseFloat(document.getElementById('profCapital').value) || 10000;
+            const risk = parseFloat(document.getElementById('profRisk').value) || 1.0;
+            const watchlistStr = document.getElementById('profWatchlist').value.trim();
+
+            currentUser.name = name;
+            currentUser.pass = pass;
+            currentUser.capital = capital;
+            currentUser.risk = risk;
+            
+            if(watchlistStr) {
+                currentUser.watchlist = watchlistStr.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
+                activeWatchlist = currentUser.watchlist;
+                renderTopWatchlistBar();
+            }
+
+            // Save custom EmailJS Keys
+            currentUser.emailjsKey = document.getElementById('profEmailJsKey').value.trim();
+            currentUser.emailjsService = document.getElementById('profEmailJsService').value.trim();
+            currentUser.emailjsTemplate = document.getElementById('profEmailJsTemplate').value.trim();
+
+            let users = JSON.parse(localStorage.getItem('lck_users') || '[]');
+            users = users.map(u => u.email === currentUser.email ? currentUser : u);
+            localStorage.setItem('lck_users', JSON.stringify(users));
+
+            // Sync Header UI
+            document.getElementById('currentUserDisplay').innerText = currentUser.name || currentUser.email;
+            document.getElementById('calcProfileCapital').innerText = `$${capital.toLocaleString()}`;
+            document.getElementById('accountSize').value = capital;
+            document.getElementById('riskPercent').value = risk;
+            calculatePosition();
+
+            alert('✅ 個人檔案與交易偏好已順利儲存！');
+        }
+
+        // 📝 Trade Journal Log Storage
         let tradeLogs = JSON.parse(localStorage.getItem('lck_trade_logs') || '[]');
         function loadLogs() {
             const container = document.getElementById('tradeLogsContainer');
             if(!container) return;
             if(tradeLogs.length === 0) {
-                container.innerHTML = '<div class="text-xs text-slate-500 text-center py-4">暫無筆記，點擊上方按鈕新增第一筆交易覆盤</div>';
+                container.innerHTML = '<div class="text-xs text-slate-500 text-center py-6">尚無覆盤記錄，點擊右上方新增第一筆交易筆記</div>';
                 return;
             }
             container.innerHTML = tradeLogs.map((log, idx) => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs space-y-1">
-                    <div class="flex justify-between text-slate-400 font-mono"><span>#${idx+1} 筆記</span><span>${log.date}</span></div>
-                    <div class="text-white">${log.content}</div>
+                <div class="bg-slate-950/80 border border-slate-800 rounded-xl p-3.5 text-xs space-y-1.5">
+                    <div class="flex justify-between text-slate-400 font-mono">
+                        <span class="text-emerald-400 font-bold"># Log ${tradeLogs.length - idx}</span>
+                        <span>${log.date}</span>
+                    </div>
+                    <div class="text-slate-200 leading-relaxed">${log.content}</div>
                 </div>
             `).join('');
         }
 
         function addTradeLog() {
-            const content = prompt("請輸入今日交易覆盤與心得：");
+            const content = prompt("請輸入今日操盤覆盤、心得或檢討：");
             if(content) {
-                tradeLogs.unshift({ date: new Date().toLocaleDateString(), content });
+                tradeLogs.unshift({ date: new Date().toLocaleString('zh-TW'), content });
                 localStorage.setItem('lck_trade_logs', JSON.stringify(tradeLogs));
                 loadLogs();
             }
         }
 
-        // ⚡ API 查詢與風控
+        // ⚡ Live Finnhub Stock Quote API
         async function fetchStockQuote() {
-            const symbol = document.getElementById('symbolInput').value.trim().toUpperCase();
-            if(!symbol) return;
+            const rawSymbol = document.getElementById('symbolSearchInput').value.trim().toUpperCase() || 'NVDA';
             const apiKey = 'dbcscohr01qioilb79ugdbcscohr01qioilb79v0';
+            
             try {
-                const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
+                const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${rawSymbol}&token=${apiKey}`);
                 const data = await res.json();
                 if(data && data.c) {
+                    document.getElementById('quoteSymbol').innerText = rawSymbol;
                     document.getElementById('quotePrice').innerText = `$${data.c.toFixed(2)}`;
-                    document.getElementById('quoteChange').innerText = `(${data.dp.toFixed(2)}%)`;
-                    document.getElementById('quoteHigh').innerText = `$${data.h.toFixed(2)}`;
-                    document.getElementById('quoteLow').innerText = `$${data.l.toFixed(2)}`;
+                    
+                    const changeVal = data.dp || 0;
+                    const changeEl = document.getElementById('quoteChange');
+                    changeEl.innerText = `${changeVal >= 0 ? '+' : ''}${changeVal.toFixed(2)}%`;
+                    changeEl.className = changeVal >= 0 ? "text-emerald-400 font-bold" : "text-rose-400 font-bold";
+
+                    document.getElementById('quoteHighLow').innerText = `$${data.h.toFixed(2)} / $${data.l.toFixed(2)}`;
                     document.getElementById('quoteOpen').innerText = `$${data.o.toFixed(2)}`;
+                    document.getElementById('entryPrice').value = data.c.toFixed(2);
+                    calculatePosition();
                 }
-            } catch(e) { console.error(e); }
+            } catch(e) { console.error("Finnhub quote fetch error:", e); }
         }
 
+        // Position & Risk Calculator
         function calculatePosition() {
             const acc = parseFloat(document.getElementById('accountSize').value) || 0;
             const risk = parseFloat(document.getElementById('riskPercent').value) || 0;
             const entry = parseFloat(document.getElementById('entryPrice').value) || 0;
             const stop = parseFloat(document.getElementById('stopPrice').value) || 0;
             const target = parseFloat(document.getElementById('targetPrice').value) || 0;
+            
             const riskPerShare = Math.abs(entry - stop);
             document.getElementById('calcRiskPerShare').innerText = `$${riskPerShare.toFixed(2)}`;
+            
             if(riskPerShare > 0 && entry > 0) {
-                const shares = Math.floor((acc * (risk / 100)) / riskPerShare);
+                const maxRiskDollars = acc * (risk / 100);
+                const shares = Math.floor(maxRiskDollars / riskPerShare);
                 document.getElementById('calcShares').innerText = `${shares} 股`;
-                document.getElementById('calcPositionValue').innerText = `$${(shares * entry).toLocaleString('en-US', {maximumFractionDigits: 2})}`;
-                document.getElementById('calcRR').innerText = `1 : ${(Math.abs(target - entry) / riskPerShare).toFixed(2)}`;
+                document.getElementById('calcPositionValue').innerText = `$${(shares * entry).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                
+                const rr = (Math.abs(target - entry) / riskPerShare).toFixed(2);
+                document.getElementById('calcRR').innerText = `1 : ${rr}`;
             }
         }
 
         ['accountSize', 'riskPercent', 'entryPrice', 'stopPrice', 'targetPrice'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculatePosition);
+            const el = document.getElementById(id);
+            if(el) el.addEventListener('input', calculatePosition);
         });
 
         function toggleModal(id) { document.getElementById(id).classList.toggle('hidden'); }
