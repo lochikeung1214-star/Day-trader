@@ -6,8 +6,6 @@
     <title>LCK 美股 DAY TRADE WEB</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -44,10 +42,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
-        .glow-green {
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
@@ -71,7 +65,6 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <!-- API Key Config Button -->
                 <button onclick="toggleModal('apiModal')" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-key text-amber-400"></i>
                     <span>API 設定</span>
@@ -128,10 +121,7 @@
                     </div>
                 </div>
                 
-                <!-- TradingView Advanced Chart Widget -->
-                <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="tv_chart_container">
-                    <!-- Widget will be rendered here dynamically -->
-                </div>
+                <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="tv_chart_container"></div>
             </div>
 
             <!-- Right Col: Real-time Stock Quote Search & Watchlist -->
@@ -145,10 +135,9 @@
                         <span class="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Live API</span>
                     </div>
 
-                    <!-- Symbol Search Input -->
                     <div class="flex gap-2 mb-4">
                         <div class="relative flex-grow">
-                            <input type="text" id="symbolInput" value="NVDA" uppercase class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono uppercase text-white placeholder-slate-500 outline-none transition" placeholder="輸入美股代號 (例: TSLA)">
+                            <input type="text" id="symbolInput" value="NVDA" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono uppercase text-white placeholder-slate-500 outline-none transition" placeholder="輸入美股代號">
                         </div>
                         <button onclick="fetchStockQuote()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2 rounded-lg text-sm transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/30">
                             <i class="fa-solid fa-magnifying-glass"></i>
@@ -156,7 +145,6 @@
                         </button>
                     </div>
 
-                    <!-- Live Quote Display Card -->
                     <div id="quoteResultCard" class="bg-slate-900/90 border border-slate-800 rounded-lg p-4 space-y-3">
                         <div class="flex justify-between items-start">
                             <div>
@@ -191,15 +179,13 @@
                             </div>
                         </div>
 
-                        <!-- One Click Apply Button -->
-                        <button onclick="applyQuoteToCalculator()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 hover:border-emerald-500 font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <button onclick="applyQuoteToCalculator()" class="w-full mt-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-arrows-to-dot"></i>
                             <span>套用即時報價至倉位精算器</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Quick Watchlist Buttons -->
                 <div class="mt-4 pt-4 border-t border-slate-800">
                     <div class="text-xs text-slate-400 mb-2">熱門監控對象:</div>
                     <div class="grid grid-cols-4 gap-1.5">
@@ -231,7 +217,7 @@
                         <input type="number" id="accountSize" value="10000" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs text-slate-400 mb-1">單筆容忍風險 (% 或 USD)</label>
+                        <label class="block text-xs text-slate-400 mb-1">單筆容忍風險 (%)</label>
                         <div class="flex gap-2">
                             <input type="number" id="riskPercent" value="1" step="0.5" class="w-24 bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none">
                             <span class="self-center text-xs text-slate-500">% = \$<span id="riskAmountCalculated">100</span></span>
@@ -246,23 +232,4 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pt-3 border-t border-slate-800">
                     <div>
                         <label class="block text-xs text-slate-400 mb-1">預計買入價 (Entry)</label>
-                        <input type="number" id="entryPrice" value="138.25" step="0.01" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">停損價 (Stop Loss)</label>
-                        <input type="number" id="stopPrice" value="136.50" step="0.01" class="w-full bg-slate-900 border border-slate-700 focus:border-rose-500 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">目標停利價 (Take Profit)</label>
-                        <input type="number" id="targetPrice" value="142.50" step="0.01" class="w-full bg-slate-900 border border-slate-700 focus:border-emerald-500 rounded-lg px-3 py-2 text-sm font-mono text-white outline-none">
-                    </div>
-                </div>
-
-                <!-- Calculation Results Output -->
-                <div class="bg-slate-950/80 rounded-xl p-4 border border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div>
-                        <div class="text-[11px] text-slate-400 mb-0.5">建議購買股數</div>
-                        <div class="text-2xl font-bold font-mono text-emerald-400" id="calcShares">57 股</div>
-                    </div>
-                    <div>
-                        <div
+                        <input type="number" id="entryPrice" value="138.
