@@ -32,14 +32,19 @@
                 <div>
                     <div class="flex items-center gap-2">
                         <h1 class="font-bold text-xl tracking-wide text-white">LCK 美股 DAY TRADE WEB</h1>
-                        <span class="px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full animate-pulse">REAL-TIME LIVE</span>
+                        <span class="px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full animate-pulse">CUSTOM GRID</span>
                     </div>
-                    <p class="text-xs text-slate-400">TradingView K線圖 (2m 專用) • LV2 與成交明細獨立面板 • 風控精算</p>
+                    <p class="text-xs text-slate-400">多圖表自由配置 • LV2 盤口 • 智能風控精算</p>
                 </div>
             </div>
-            <button onclick="toggleModal('apiModal')" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-key text-amber-400"></i><span>API 設定</span>
-            </button>
+
+            <div class="flex items-center gap-2">
+                <!-- 自訂版面按鈕 -->
+                <button onclick="openLayoutDesigner()" class="px-3 py-1.5 text-xs font-medium bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 rounded-lg border border-emerald-500/40 transition flex items-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>⚙️ 設計 K 線圖版面 (加減圖表)</span>
+                </button>
+            </div>
         </div>
 
         <!-- TradingView Ticker Tape Bar (上方走馬燈行情) -->
@@ -71,13 +76,13 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-6 w-full space-y-6">
         
-        <!-- Row 1: Left Chart (連同行情查詢與 2m 圖) + Right Split (LV2 深度報價 & 成交明細分開) -->
+        <!-- Row 1: Real Quote Query & Dynamic Charts Grid + Right LV2 -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Left Side: Chart & Quote Bar on Top of Chart (2 Cols) -->
+            <!-- Left Side: Dynamic Multi-Charts Area (2 Cols) -->
             <div class="lg:col-span-2 space-y-4">
                 
-                <!-- 美股真實行情查詢 (置於 K 線圖上方) -->
+                <!-- 美股真實行情查詢 -->
                 <div class="glass-panel rounded-xl p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
@@ -91,8 +96,6 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- 即時報價資料列 -->
                     <div class="mt-3 pt-3 border-t border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-mono">
                         <div>現價: <span id="quotePrice" class="text-emerald-400 font-bold">\$221.97</span> <span id="quoteChange" class="text-emerald-400">(+2.54%)</span></div>
                         <div>最高 High: <span id="quoteHigh" class="text-slate-200">\$222.19</span></div>
@@ -101,42 +104,16 @@
                     </div>
                 </div>
 
-                <!-- 即時 K 線圖 (內含 2m 快捷按鈕) -->
-                <div class="glass-panel rounded-xl p-4 flex flex-col h-[500px]">
-                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <div class="flex items-center gap-2">
-                            <i class="fa-solid fa-chart-candlestick text-emerald-400"></i>
-                            <h2 class="font-bold text-sm text-slate-200">即時 K 線圖表</h2>
-                            <span id="currentChartTicker" class="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-slate-700">NASDAQ:NVDA</span>
-                        </div>
-                        
-                        <div class="flex items-center gap-3 text-xs">
-                            <!-- 週期切換 (含 2m) -->
-                            <div class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded border border-slate-800">
-                                <span class="text-slate-400">週期:</span>
-                                <button onclick="changeInterval('2')" class="px-1.5 py-0.5 bg-emerald-600/30 hover:bg-emerald-600 text-emerald-400 hover:text-white rounded font-mono">2m</button>
-                                <button onclick="changeInterval('5')" class="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-mono">5m</button>
-                                <button onclick="changeInterval('15')" class="px-1.5 py-0.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded font-mono">15m</button>
-                            </div>
-
-                            <!-- 股票代號快捷切換 -->
-                            <div class="flex items-center gap-1">
-                                <button onclick="changeSymbol('NASDAQ:NVDA')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">NVDA</button>
-                                <button onclick="changeSymbol('NASDAQ:TSLA')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">TSLA</button>
-                                <button onclick="changeSymbol('NASDAQ:AAPL')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">AAPL</button>
-                                <button onclick="changeSymbol('NASDAQ:QQQ')" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 font-mono">QQQ</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="tv_chart_container"></div>
+                <!-- 動態多 K 線圖顯示容器 (由 JS 自動生成) -->
+                <div id="chartsGridContainer" class="grid grid-cols-1 gap-4">
+                    <!-- Dynamic Chart Cards will be injected here -->
                 </div>
+
             </div>
 
-            <!-- Right Column: Split into 2 Independent Panels (1. LV2 深度報價 / 2. 成交明細) -->
+            <!-- Right Column: Split LV2 & Trades -->
             <div class="space-y-4 flex flex-col h-[600px]">
-                
-                <!-- Panel A: LV2 深度報價 (Order Book 盤口) -->
+                <!-- Panel A: LV2 深度報價 -->
                 <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
                     <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
                         <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5">
@@ -144,26 +121,15 @@
                         </h2>
                         <span class="text-[9px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">五檔委買委賣</span>
                     </div>
-                    
-                    <!-- TradingView Technical / Order Book Widget A -->
                     <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
                         <div class="tradingview-widget-container__widget w-full h-full"></div>
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-                        {
-                        "interval": "1m",
-                        "width": "100%",
-                        "isTransparent": true,
-                        "height": "100%",
-                        "symbol": "NASDAQ:NVDA",
-                        "showIntervalTabs": false,
-                        "locale": "zh_TW",
-                        "colorTheme": "dark"
-                        }
+                        { "interval": "1m", "width": "100%", "isTransparent": true, "height": "100%", "symbol": "NASDAQ:NVDA", "showIntervalTabs": false, "locale": "zh_TW", "colorTheme": "dark" }
                         </script>
                     </div>
                 </div>
 
-                <!-- Panel B: 成交明細 (Time & Sales / Recent Trades) -->
+                <!-- Panel B: 即時成交明細 -->
                 <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
                     <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
                         <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5">
@@ -171,27 +137,13 @@
                         </h2>
                         <span class="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">逐筆成交</span>
                     </div>
-                    
-                    <!-- TradingView Hotlists / Trades Widget B -->
                     <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
                         <div class="tradingview-widget-container__widget w-full h-full"></div>
                         <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js" async>
-                        {
-                        "colorTheme": "dark",
-                        "dateRange": "1d",
-                        "exchange": "US",
-                        "showChart": false,
-                        "locale": "zh_TW",
-                        "largeChartUrl": "",
-                        "isTransparent": true,
-                        "showSymbolLogo": false,
-                        "width": "100%",
-                        "height": "100%"
-                        }
+                        { "colorTheme": "dark", "dateRange": "1d", "exchange": "US", "showChart": false, "locale": "zh_TW", "isTransparent": true, "showSymbolLogo": false, "width": "100%", "height": "100%" }
                         </script>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -219,48 +171,177 @@
         </div>
     </main>
 
-    <!-- JavaScript Logic -->
+    <!-- Layout Designer Modal (版面配置彈窗) -->
+    <div id="layoutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-200 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-400"></i> K 線圖版面配置中心
+                </h3>
+                <button onclick="toggleModal('layoutModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-xs text-slate-400">你可以隨意增減圖表、切換預設佈局（單圖、雙圖並排、三圖組合），打造你專屬嘅 Day Trade 畫面：</p>
+            
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="loadPresetLayout('single')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition">
+                    <div class="font-bold text-white text-xs mb-1">🖥️ 單圖極簡佈局 (1張)</div>
+                    <div class="text-[11px] text-slate-400">專注單一熱門標的</div>
+                </button>
+                <button onclick="loadPresetLayout('double')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition">
+                    <div class="font-bold text-white text-xs mb-1">💻 雙圖對比佈局 (2張)</div>
+                    <div class="text-[11px] text-slate-400">適合大盤(QQQ) + 個股(NVDA)對比</div>
+                </button>
+                <button onclick="loadPresetLayout('triple')" class="p-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-left transition">
+                    <div class="font-bold text-white text-xs mb-1">🚀 三圖多方位監控 (3張)</div>
+                    <div class="text-[11px] text-slate-400">同時監控多隻強勢股</div>
+                </button>
+                <button onclick="addNewChartCard()" class="p-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 rounded-xl text-left transition">
+                    <div class="font-bold text-emerald-400 text-xs mb-1">➕ 手動增加一張圖表</div>
+                    <div class="text-[11px] text-slate-400">自由擴充圖表數量</div>
+                </button>
+            </div>
+
+            <div class="flex justify-end pt-3 border-t border-slate-800">
+                <button onclick="toggleModal('layoutModal')" class="px-5 py-2 text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition">完成並套用</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic for Dynamic Multi-Charts Grid -->
     <script>
-        let currentSymbol = 'NASDAQ:NVDA';
-        let currentInterval = '2'; // 預設 2 分鐘圖
+        // 預設圖表資料結構 (儲存於 LocalStorage)
+        let chartsConfig = JSON.parse(localStorage.getItem('lck_charts_config') || JSON.stringify([
+            { id: 'chart_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '500px' },
+            { id: 'chart_2', symbol: 'NASDAQ:QQQ', interval: '5', height: '400px' }
+        ]));
 
         window.addEventListener('DOMContentLoaded', () => {
-            initTradingViewWidget(currentSymbol, currentInterval);
+            renderChartsGrid();
             calculatePosition();
         });
 
-        function initTradingViewWidget(symbol, interval) {
-            currentSymbol = symbol;
-            currentInterval = interval;
-            const container = document.getElementById('tv_chart_container');
-            if(!container) return;
+        function renderChartsGrid() {
+            const container = document.getElementById('chartsGridContainer');
             container.innerHTML = '';
-            
-            if (typeof TradingView !== 'undefined') {
-                new TradingView.widget({
-                    "autosize": true,
-                    "symbol": symbol,
-                    "interval": interval,
-                    "timezone": "America/New_York",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "zh_TW",
-                    "toolbar_bg": "#0f172a",
-                    "enable_publishing": false,
-                    "hide_side_toolbar": false,
-                    "allow_symbol_change": true,
-                    "container_id": "tv_chart_container"
-                });
-                document.getElementById('currentChartTicker').innerText = symbol;
+
+            chartsConfig.forEach((cfg, index) => {
+                const card = document.createElement('div');
+                card.className = 'glass-panel rounded-xl p-4 flex flex-col';
+                card.style.height = cfg.height;
+                
+                card.innerHTML = `
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-chart-candlestick text-emerald-400"></i>
+                            <h2 class="font-bold text-sm text-slate-200">圖表 #${index + 1}</h2>
+                            <span class="text-xs font-mono bg-slate-800 px-2 py-0.5 rounded text-emerald-400 border border-slate-700">${cfg.symbol}</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-2 text-xs">
+                            <!-- 週期切換 -->
+                            <div class="flex items-center gap-1 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                                <span class="text-slate-400">週期:</span>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '2')" class="px-1.5 py-0.5 ${cfg.interval==='2'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded font-mono">2m</button>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '5')" class="px-1.5 py-0.5 ${cfg.interval==='5'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded font-mono">5m</button>
+                                <button onclick="updateChartParam('${cfg.id}', 'interval', '15')" class="px-1.5 py-0.5 ${cfg.interval==='15'?'bg-emerald-600 text-white':'bg-slate-800 text-slate-300'} rounded font-mono">15m</button>
+                            </div>
+
+                            <!-- 代號切換 -->
+                            <select onchange="updateChartParam('${cfg.id}', 'symbol', this.value)" class="bg-slate-900 text-emerald-400 border border-slate-700 rounded px-2 py-1 text-xs font-mono outline-none">
+                                <option value="NASDAQ:NVDA" ${cfg.symbol==='NASDAQ:NVDA'?'selected':''}>NVDA</option>
+                                <option value="NASDAQ:TSLA" ${cfg.symbol==='NASDAQ:TSLA'?'selected':''}>TSLA</option>
+                                <option value="NASDAQ:AAPL" ${cfg.symbol==='NASDAQ:AAPL'?'selected':''}>AAPL</option>
+                                <option value="NASDAQ:QQQ" ${cfg.symbol==='NASDAQ:QQQ'?'selected':''}>QQQ</option>
+                                <option value="NASDAQ:MSFT" ${cfg.symbol==='NASDAQ:MSFT'?'selected':''}>MSFT</option>
+                                <option value="NASDAQ:AMD" ${cfg.symbol==='NASDAQ:AMD'?'selected':''}>AMD</option>
+                            </select>
+
+                            <!-- 高度調整 -->
+                            <select onchange="updateChartParam('${cfg.id}', 'height', this.value)" class="bg-slate-900 text-slate-300 border border-slate-700 rounded px-2 py-1 text-xs outline-none">
+                                <option value="350px" ${cfg.height==='350px'?'selected':''}>矮 (350)</option>
+                                <option value="500px" ${cfg.height==='500px'?'selected':''}>標準 (500)</option>
+                                <option value="650px" ${cfg.height==='650px'?'selected':''}>高 (650)</option>
+                            </select>
+
+                            <!-- 刪除圖表按鈕 -->
+                            <button onclick="removeChartCard('${cfg.id}')" class="text-slate-500 hover:text-rose-400 p-1" title="刪除此圖表">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full flex-grow rounded-lg overflow-hidden border border-slate-800 bg-slate-950" id="${cfg.id}"></div>
+                `;
+                container.appendChild(card);
+
+                // 初始化 TradingView Widget
+                setTimeout(() => {
+                    if (typeof TradingView !== 'undefined') {
+                        new TradingView.widget({
+                            "autosize": true,
+                            "symbol": cfg.symbol,
+                            "interval": cfg.interval,
+                            "timezone": "America/New_York",
+                            "theme": "dark",
+                            "style": "1",
+                            "locale": "zh_TW",
+                            "toolbar_bg": "#0f172a",
+                            "enable_publishing": false,
+                            "hide_side_toolbar": false,
+                            "allow_symbol_change": true,
+                            "container_id": cfg.id
+                        });
+                    }
+                }, 100);
+            });
+
+            localStorage.setItem('lck_charts_config', JSON.stringify(chartsConfig));
+        }
+
+        function updateChartParam(id, param, val) {
+            chartsConfig = chartsConfig.map(cfg => {
+                if(cfg.id === id) cfg[param] = val;
+                return cfg;
+            });
+            renderChartsGrid();
+        }
+
+        function addNewChartCard() {
+            const newId = 'chart_' + Date.now();
+            chartsConfig.push({ id: newId, symbol: 'NASDAQ:TSLA', interval: '2', height: '450px' });
+            renderChartsGrid();
+        }
+
+        function removeChartCard(id) {
+            if(chartsConfig.length <= 1) {
+                alert('畫面最少需要保留一張圖表！');
+                return;
             }
+            chartsConfig = chartsConfig.filter(cfg => cfg.id !== id);
+            renderChartsGrid();
         }
 
-        function changeSymbol(symbol) {
-            initTradingViewWidget(symbol, currentInterval);
+        function loadPresetLayout(type) {
+            if(type === 'single') {
+                chartsConfig = [{ id: 'c_1', symbol: 'NASDAQ:NVDA', interval: '2', height: '550px' }];
+            } else if(type === 'double') {
+                chartsConfig = [
+                    { id: 'c_1', symbol: 'NASDAQ:QQQ', interval: '5', height: '420px' },
+                    { id: 'c_2', symbol: 'NASDAQ:NVDA', interval: '2', height: '420px' }
+                ];
+            } else if(type === 'triple') {
+                chartsConfig = [
+                    { id: 'c_1', symbol: 'NASDAQ:QQQ', interval: '5', height: '380px' },
+                    { id: 'c_2', symbol: 'NASDAQ:NVDA', interval: '2', height: '380px' },
+                    { id: 'c_3', symbol: 'NASDAQ:TSLA', interval: '2', height: '380px' }
+                ];
+            }
+            renderChartsGrid();
+            toggleModal('layoutModal');
         }
 
-        function changeInterval(interval) {
-            initTradingViewWidget(currentSymbol, interval);
+        function openLayoutDesigner() {
+            toggleModal('layoutModal');
         }
 
         async function fetchStockQuote() {
