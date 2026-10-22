@@ -430,7 +430,7 @@
             const symbol = document.getElementById('symbolInput').value.trim().toUpperCase();
             if(!symbol) return;
 
-            const apiKey = localStorage.getItem('finnhub_api_key') || 'ct87921r01qhk69spms0ct87921r01qhk69spmsg';
+            const apiKey = localStorage.getItem('finnhub_api_key') || 'dbcscohr01qioilb79ugdbcscohr01qioilb79v0';
             
             try {
                 const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${apiKey}`);
