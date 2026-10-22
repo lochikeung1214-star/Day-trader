@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LCK 美股 Day Trade Web (Live Data & HTTP Web Edition)</title>
+  <title>美股 Day Trade 戰術終端機 (Live Data & HTTP Web Edition)</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -81,12 +81,20 @@
         </div>
         <div>
           <h1 class="font-bold text-lg tracking-wide text-white flex items-center gap-2">
-            LCK 美股 Day Trade Web 
+            美股 DAY TRADE 戰術終端機 
             <span class="text-xs font-mono px-2 py-0.5 rounded bg-cyber-neonGreen/20 text-cyber-neonGreen border border-cyber-neonGreen/40">REAL-TIME LIVE</span>
           </h1>
           <p class="text-xs text-gray-400">TradingView K線圖 • 真實 API • HTTP 網頁化部署教學</p>
         </div>
       </div>
+
+      <!-- Settings & Deployment Actions -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Button to open HTTP Deployment Guide -->
+        <button onclick="openDeployModal()" class="flex items-center gap-1.5 text-xs bg-cyber-purple/20 hover:bg-cyber-purple/30 text-cyber-purple border border-cyber-purple/40 px-3 py-1.5 rounded-lg transition font-semibold glow-purple">
+          <i class="fa-solid fa-globe"></i>
+          <span>變成 HTTP 網頁網站</span>
+        </button>
 
         <button onclick="openApiModal()" class="flex items-center gap-1.5 text-xs bg-cyber-bg hover:bg-cyber-border/60 text-gray-300 border border-cyber-border px-3 py-1.5 rounded-lg transition">
           <i class="fa-solid fa-key text-cyber-yellow"></i>
