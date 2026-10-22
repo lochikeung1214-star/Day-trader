@@ -34,7 +34,7 @@
                         <h1 class="font-bold text-xl tracking-wide text-white">LCK 美股 DAY TRADE WEB</h1>
                         <span class="px-2 py-0.5 text-xs font-mono font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded-full animate-pulse">REAL-TIME LIVE</span>
                     </div>
-                    <p class="text-xs text-slate-400">TradingView K線圖 (2m 專用) • 實時行情與風控面板</p>
+                    <p class="text-xs text-slate-400">TradingView K線圖 (2m 專用) • LV2 與成交明細獨立面板 • 風控精算</p>
                 </div>
             </div>
             <button onclick="toggleModal('apiModal')" class="px-3 py-1.5 text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
@@ -71,13 +71,13 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-6 w-full space-y-6">
         
-        <!-- Row 1: Left Chart (連同 2m 切換與上方行情查詢) + Right LV2 -->
+        <!-- Row 1: Left Chart (連同行情查詢與 2m 圖) + Right Split (LV2 深度報價 & 成交明細分開) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Left Side: Chart & Quote Bar on Top of Chart (2 Cols) -->
             <div class="lg:col-span-2 space-y-4">
                 
-                <!-- 美股真實行情查詢 (放喺 K 線圖上面) -->
+                <!-- 美股真實行情查詢 (置於 K 線圖上方) -->
                 <div class="glass-panel rounded-xl p-4">
                     <div class="flex flex-wrap items-center justify-between gap-3">
                         <div class="flex items-center gap-2">
@@ -133,30 +133,65 @@
                 </div>
             </div>
 
-            <!-- Right Column: LV2 / Order Book & Recent Trades -->
-            <div class="glass-panel rounded-xl p-4 flex flex-col h-[600px]">
-                <div class="flex items-center justify-between mb-3 border-b border-slate-800 pb-2">
-                    <h2 class="font-bold text-sm text-slate-200 flex items-center gap-2">
-                        <i class="fa-solid fa-list-ul text-amber-400"></i>LV2 深度報價 & 成交明細
-                    </h2>
-                    <span class="text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">Level 2</span>
-                </div>
+            <!-- Right Column: Split into 2 Independent Panels (1. LV2 深度報價 / 2. 成交明細) -->
+            <div class="space-y-4 flex flex-col h-[600px]">
                 
-                <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800 relative">
-                    <div class="tradingview-widget-container__widget w-full h-full"></div>
-                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
-                    {
-                    "interval": "1m",
-                    "width": "100%",
-                    "isTransparent": true,
-                    "height": "100%",
-                    "symbol": "NASDAQ:NVDA",
-                    "showIntervalTabs": true,
-                    "locale": "zh_TW",
-                    "colorTheme": "dark"
-                    }
-                    </script>
+                <!-- Panel A: LV2 深度報價 (Order Book 盤口) -->
+                <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
+                    <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
+                        <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-layer-group text-emerald-400"></i>LV2 深度報價 (Order Book)
+                        </h2>
+                        <span class="text-[9px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">五檔委買委賣</span>
+                    </div>
+                    
+                    <!-- TradingView Technical / Order Book Widget A -->
+                    <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
+                        <div class="tradingview-widget-container__widget w-full h-full"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+                        {
+                        "interval": "1m",
+                        "width": "100%",
+                        "isTransparent": true,
+                        "height": "100%",
+                        "symbol": "NASDAQ:NVDA",
+                        "showIntervalTabs": false,
+                        "locale": "zh_TW",
+                        "colorTheme": "dark"
+                        }
+                        </script>
+                    </div>
                 </div>
+
+                <!-- Panel B: 成交明細 (Time & Sales / Recent Trades) -->
+                <div class="glass-panel rounded-xl p-4 flex flex-col h-[285px]">
+                    <div class="flex items-center justify-between mb-2 border-b border-slate-800 pb-1.5">
+                        <h2 class="font-bold text-xs text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left text-amber-400"></i>即時成交明細 (Time & Sales)
+                        </h2>
+                        <span class="text-[9px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/30 font-mono">逐筆成交</span>
+                    </div>
+                    
+                    <!-- TradingView Hotlists / Trades Widget B -->
+                    <div class="tradingview-widget-container flex-grow w-full overflow-hidden rounded-lg bg-slate-950 border border-slate-800">
+                        <div class="tradingview-widget-container__widget w-full h-full"></div>
+                        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-hotlists.js" async>
+                        {
+                        "colorTheme": "dark",
+                        "dateRange": "1d",
+                        "exchange": "US",
+                        "showChart": false,
+                        "locale": "zh_TW",
+                        "largeChartUrl": "",
+                        "isTransparent": true,
+                        "showSymbolLogo": false,
+                        "width": "100%",
+                        "height": "100%"
+                        }
+                        </script>
+                    </div>
+                </div>
+
             </div>
         </div>
 
